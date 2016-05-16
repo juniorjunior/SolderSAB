@@ -1,0 +1,8 @@
+# All of these values MUST HAVE A TRAILING SLASH!!
+
+[Solder]
+SolderAPIURL = http://solder.yourdomain.com/api/
+ModsBaseURL = http://solder.yourdomain.com/mods/
+
+[Builder]
+WorkingFolder = /home/user/SolderSAB/
