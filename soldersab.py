@@ -37,11 +37,12 @@ if ( not os.path.isfile(configfile) ):
 
 # Read in the config file and set some local values
 Config = ConfigParser.ConfigParser()
-Config.read("soldersab.ini")
+Config.read(configfile)
 
 SolderAPIURL = Config.get("Solder", "SolderAPIURL")
 ModsBaseURL = Config.get("Solder", "ModsBaseURL")
 WorkingFolder = Config.get("Builder", "WorkingFolder")
+ClientOnlyMatch = Config.get("Builder", "ClientOnlyMatch").replace(" ","").split(",")
 
 if ( not os.path.isdir(WorkingFolder) ):
    print "Working folder \"%s\" does not exist!" % BuildFolder
@@ -96,8 +97,15 @@ if ( os.path.isfile(BuildFolder + "client-only-mods.txt") ):
          os.remove(BuildFolder + "mods/" +line.strip())
    fh.close
 
+# Remove mod names matching ClientOnlyMatch
+for path, dirs, files in os.walk(BuildFolder + "mods/"):
+   for filename in files:
+      for match in ClientOnlyMatch:
+         if ( match in filename ):
+            os.remove(os.path.join(path, filename))
+
 # Get rid of the bin/ folder
-if ( os.path.isdir(BuildFolder + "bin/" ):
+if ( os.path.isdir(BuildFolder + "bin/") ):
    shutil.rmtree(BuildFolder + "bin/")
 
 # Set the ZIP compression type if available

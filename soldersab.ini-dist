@@ -1,8 +1,14 @@
 # All of these values MUST HAVE A TRAILING SLASH!!
 
 [Solder]
+
 SolderAPIURL = http://solder.yourdomain.com/api/
+
 ModsBaseURL = http://solder.yourdomain.com/mods/
 
 [Builder]
+
 WorkingFolder = /home/user/SolderSAB/
+
+# ClientOnlyMatch is a comma separated list of strings to match mod file names for exclusion in the server
+ClientOnlyMatch = CLIENT, CLIENTMOD
