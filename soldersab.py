@@ -37,7 +37,7 @@ if ( not os.path.isfile(configfile) ):
 
 # Read in the config file and set some local values
 Config = ConfigParser.ConfigParser()
-Config.read("srvbuilder.ini")
+Config.read("soldersab.ini")
 
 SolderAPIURL = Config.get("Solder", "SolderAPIURL")
 ModsBaseURL = Config.get("Solder", "ModsBaseURL")
@@ -58,8 +58,10 @@ if ( not os.path.isfile(TemplateFile) ):
    sys.exit(3)
 
 # Clean out the Cache and Build folders
-shutil.rmtree(CacheFolder)
-shutil.rmtree(BuildFolder)
+if ( os.path.isdir(CacheFolder) ):
+   shutil.rmtree(CacheFolder)
+if ( os.path.isdir(BuildFolder) ):
+   shutil.rmtree(BuildFolder)
 os.makedirs(CacheFolder)
 os.makedirs(BuildFolder)
 
@@ -95,7 +97,8 @@ if ( os.path.isfile(BuildFolder + "client-only-mods.txt") ):
    fh.close
 
 # Get rid of the bin/ folder
-shutil.rmtree(BuildFolder + "bin/")
+if ( os.path.isdir(BuildFolder + "bin/" ):
+   shutil.rmtree(BuildFolder + "bin/")
 
 # Set the ZIP compression type if available
 try:
