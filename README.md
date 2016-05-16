@@ -1,6 +1,11 @@
 # SolderSAB
 Builds a server archive file from the recommended build in Solder
 
+## Prerequisites
+* Add a file named "client-only-mods.txt" to your pack (in the "configs" mod might be a good place)
+* Add one line to the file for each mod which should be removed from the server
+* It is assumed that listed files are in mods/ so only include paths for subfolders (i.e. 1.7.10/liteloader.jar)
+
 ## Instructions
 * Check out this repo
 * Copy the soldersab.ini-dist file to soldersab.ini and edit the contents to reflect your environment
