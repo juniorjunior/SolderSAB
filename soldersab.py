@@ -8,21 +8,30 @@ import urllib
 import json
 import zipfile
 
+def showUsage():
+   print "Usage: srvbuilder.py -t <templatename> -p <packslug> [-b] [-c <configfile>]"
+   print "       -t <templatename> : The name of the template archive (without extension)"
+   print "       -p <packslug      : The slug name of the pack to process"
+   print "       -b                : Whether to clobber an existing server archive file"
+   print "       -c <configfile>   : Full path to config if not in current directory"
+   return
+
 templatename = ""
 packslug = ""
+clobber = False
 
 # Unless a full path is specified on the command line, the .ini file
 # will be read from the folder in which the script is executed.
 configfile = "soldersab.ini"
 
 try:
-   opts, args = getopt.getopt(sys.argv[1:], "hc:t:p:", ["config=", "template=", "packslug="])
+   opts, args = getopt.getopt(sys.argv[1:], "hc:t:bp:", ["help", "config=", "template=", "clobber", "packslug="])
 except getopt.GetoptError:
-   print "Usage: srvbuilder.py -t <templatename> -p <packslug>"
+   showUsage()
    sys.exit(2)
 for opt, arg in opts:
-   if opt == '-h':
-      print "Usage: srvbuilder.py -t <templatename> -p <packslug>"
+   if opt in ("-h", "--help"):
+      showUsage()
       sys.exit(2)
    elif opt in ("-t", "--template"):
       templatename = arg
@@ -30,9 +39,22 @@ for opt, arg in opts:
       packslug = arg
    elif opt in ("-c", "--config"):
       configfile = arg
+   elif opt in ("-b", "--clobber"):
+      clobber = True
+
+if ( templatename == "" ):
+   print "Error: Template Name must be provided"
+   showUsage()
+   sys.exit(2)
+
+if ( packslug == "" ):
+   print "Error: Pack Slug must be provided"
+   showUsage()
+   sys.exit(2)
 
 if ( not os.path.isfile(configfile) ):
-   print "Could not find config file \"%s\"" % configfile
+   print "Error: Could not find config file \"%s\"" % configfile
+   showUsage()
    sys.exit(4)
 
 # Read in the config file and set some local values
@@ -45,7 +67,7 @@ WorkingFolder = Config.get("Builder", "WorkingFolder")
 ClientOnlyMatch = Config.get("Builder", "ClientOnlyMatch").replace(" ","").split(",")
 
 if ( not os.path.isdir(WorkingFolder) ):
-   print "Working folder \"%s\" does not exist!" % BuildFolder
+   print "Error: Working folder \"%s\" does not exist!" % BuildFolder
    sys.exit(1)
 
 # Shouldn't have to change these
@@ -55,7 +77,8 @@ OutputFolder = WorkingFolder + "servers/"
 TemplateFile = WorkingFolder + "templates/" + templatename + ".zip"
 
 if ( not os.path.isfile(TemplateFile) ):
-   print "Template file \"%s\" does not exist!" % TemplateFile
+   print "Error: Template file \"%s\" does not exist!" % TemplateFile
+   showUsage()
    sys.exit(3)
 
 # Clean out the Cache and Build folders
@@ -78,6 +101,12 @@ if ( not os.path.isdir(OutputFolder) ):
 PackURL = SolderAPIURL + "modpack/" + packslug
 packData = json.loads(urllib2.urlopen(PackURL).read())
 packContents = json.loads(urllib2.urlopen(PackURL + "/" + packData["recommended"]).read())
+serverArchiveFile = OutputFolder + packslug + "-" + packData["recommended"] + "-server.zip"
+# Bail out of the server archive output file exists but clobber is false
+if ( os.path.isfile(serverArchiveFile) and not clobber ):
+   print "Error: Server archive \"%s\" exists but clobber option not set!"
+   showUsage()
+   sys.exit(5)
 print "Pack Name: %s" % packData["display_name"]
 print "Number of mods: %d" % len(packContents["mods"])
 print ""
@@ -116,7 +145,6 @@ except:
    compression = zipfile.ZIP_STORED
 
 # Create the server archive
-serverArchiveFile = OutputFolder + packslug + "-" + packData["recommended"] + "-server.zip"
 print ""
 print "Creating server archive: %s" % serverArchiveFile
 zf = zipfile.ZipFile(serverArchiveFile, mode='w')
