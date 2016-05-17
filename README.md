@@ -11,6 +11,7 @@ Builds a server archive file from the recommended build in Solder
 * Copy the soldersab.ini-dist file to soldersab.ini and edit the contents to reflect your environment
 * Create a template to use for your server. This is a generic "not modpack specific" archive containing only the files required to get the server up and running. Detailed instructions are in the template folder.
 * Execute the script: python soldersab.py -t Server-Whatever -p packslugname [-b] [-c configfile]
+
 | Parameter | Description |
 | --------- | :---------- |
 | -t Server-Whatever | The template name to use. This is just the name of the archive in templates/ without the .zip extension |
